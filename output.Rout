@@ -139,12 +139,9 @@ NULL
 > # 7. Bar chart of top 12 countries with highest mean_life_exp
 > # Select top 12 countries by mean life expectancy
 > top_12 <- head(sowc_demographics[order(-sowc_demographics$mean_life_exp), ], 12)
-> 
-> # Define custom colors for the bars
+
 > barplot_colors <- c("#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac", "#ffca5d", "#a9cce3")
-> 
-> # Set up plot parameters
-> par(mar = c(5, 8, 4, 2)) # Adjust plot margins
+> par(mar = c(5, 8, 4, 2)) 
 > 
 > # Create bar plot
 > bp <- barplot(height = top_12$mean_life_exp,
@@ -159,13 +156,13 @@ NULL
 +         space = 0.5, # Adjust space between bars
 +         beside = TRUE) # Plot bars side by side
 > 
-> # Add labels to each bar with adjusted positions
+> # Add labels to each bar 
 > for (i in 1:length(top_12$mean_life_exp)) {
-+   text(x = bp[i], # x-coordinate of label
-+        y = top_12$mean_life_exp[i] - 0.75, # y-coordinate of label
-+        labels = round(top_12$mean_life_exp[i], 1), # mean life expectancy value rounded to 1 decimal place
-+        pos = 3, # position the label above the bar
-+        cex = 0.7) # set font size of label
++   text(x = bp[i], 
++        y = top_12$mean_life_exp[i] - 0.75, 
++        labels = round(top_12$mean_life_exp[i], 1), 
++        pos = 3, 
++        cex = 0.7)
 + }
 > 
 > # 8. Countries present in sowc_maternal_newborn but not in sowc_child_mortality
