@@ -1,0 +1,195 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> # Load the required packages
+> library(openintro)
+Loading required package: airports
+Loading required package: cherryblossom
+Loading required package: usdata
+
+Attaching package: ‘openintro’
+
+The following object is masked _by_ ‘.GlobalEnv’:
+
+    sowc_demographics
+
+> 
+> # Load the datasets
+> data(census)
+> data(sowc_child_mortality)
+> data(sowc_demographics)
+> data(sowc_maternal_newborn)
+> 
+> # Let's explore the dataset
+> print(str(census))
+tibble [500 × 8] (S3: tbl_df/tbl/data.frame)
+ $ census_year          : int [1:500] 2000 2000 2000 2000 2000 2000 2000 2000 2000 2000 ...
+ $ state_fips_code      : Factor w/ 47 levels "Alabama","Arizona",..: 9 9 9 9 9 9 9 9 9 9 ...
+ $ total_family_income  : int [1:500] 14550 22800 0 23000 48000 74000 23000 74000 60000 14600 ...
+ $ age                  : int [1:500] 44 20 20 6 55 43 60 47 54 58 ...
+ $ sex                  : Factor w/ 2 levels "Female","Male": 2 1 2 1 2 1 1 1 1 1 ...
+ $ race_general         : Factor w/ 8 levels "American Indian or Alaska Native",..: 7 8 2 8 8 8 8 8 2 8 ...
+ $ marital_status       : Factor w/ 6 levels "Divorced","Married/spouse absent",..: 3 4 4 4 3 3 3 3 3 6 ...
+ $ total_personal_income: int [1:500] 0 13000 20000 NA 36000 27000 11800 48000 40000 14600 ...
+NULL
+> 
+> # 1. Remove NA values from personal income variable in census data
+> census_no_na <- census[!is.na(census$total_personal_income), ]
+> print(str(census_no_na))
+tibble [392 × 8] (S3: tbl_df/tbl/data.frame)
+ $ census_year          : int [1:392] 2000 2000 2000 2000 2000 2000 2000 2000 2000 2000 ...
+ $ state_fips_code      : Factor w/ 47 levels "Alabama","Arizona",..: 9 9 9 9 9 9 9 9 9 9 ...
+ $ total_family_income  : int [1:392] 14550 22800 0 48000 74000 23000 74000 60000 14600 0 ...
+ $ age                  : int [1:392] 44 20 20 55 43 60 47 54 58 33 ...
+ $ sex                  : Factor w/ 2 levels "Female","Male": 2 1 2 2 1 1 1 1 1 1 ...
+ $ race_general         : Factor w/ 8 levels "American Indian or Alaska Native",..: 7 8 2 8 8 8 8 2 8 8 ...
+ $ marital_status       : Factor w/ 6 levels "Divorced","Married/spouse absent",..: 3 4 4 3 3 3 3 3 6 4 ...
+ $ total_personal_income: int [1:392] 0 13000 20000 36000 27000 11800 48000 40000 14600 23000 ...
+NULL
+> 
+> # 2. See only the 25th to 35th observations of the census data
+> print(census[25:35, ])
+# A tibble: 11 × 8
+   census_year state_fips_code total_family_income   age sex    race_general
+         <int> <fct>                         <int> <int> <fct>  <fct>       
+ 1        2000 Florida                       90000    12 Male   White       
+ 2        2000 Florida                       38320    47 Male   White       
+ 3        2000 Florida                      103700     8 Female White       
+ 4        2000 Florida                           0    67 Male   Black       
+ 5        2000 Florida                       70700    17 Female White       
+ 6        2000 Florida                       64800    69 Female White       
+ 7        2000 Florida                       60000    55 Male   White       
+ 8        2000 Florida                      118100    18 Female White       
+ 9        2000 Florida                       21000    66 Female White       
+10        2000 Florida                       40000    58 Female White       
+11        2000 Florida                       17300    21 Male   Black       
+# ℹ 2 more variables: marital_status <fct>, total_personal_income <int>
+> 
+> # 3. Find the mean total income for every person in the census dataset
+> mean_total_income <- mean(census$total_personal_income, na.rm = TRUE)
+> cat("Mean total income for every person in the census dataset:", mean_total_income, "\n")
+Mean total income for every person in the census dataset: 29081.72 
+> 
+> # 4. Join sowc_demographics and sowc_child_mortality
+> joined_data <- merge(sowc_demographics, sowc_child_mortality, by = "countries_and_areas", 
++                      suffixes = c("", ".drop"))
+> joined_data <- joined_data[, c("countries_and_areas", "life_expectancy_2018", "under5_mortality_2018")]
+> print(str(joined_data))
+'data.frame':	195 obs. of  3 variables:
+ $ countries_and_areas  : chr  "Afghanistan" "Albania" "Algeria" "Andorra" ...
+ $ life_expectancy_2018 : int  64 78 77 NA 61 77 77 75 83 81 ...
+ $ under5_mortality_2018: int  62 9 23 3 77 6 10 12 4 4 ...
+NULL
+> 
+> # 5. Left join with sowc_maternal_newborn dataset
+> joined_data <- merge(joined_data, sowc_maternal_newborn, by = "countries_and_areas", all.x = TRUE)
+> print(str(joined_data))
+'data.frame':	195 obs. of  20 variables:
+ $ countries_and_areas          : chr  "Afghanistan" "Albania" "Algeria" "Andorra" ...
+ $ life_expectancy_2018         : int  64 78 77 NA 61 77 77 75 83 81 ...
+ $ under5_mortality_2018        : int  62 9 23 3 77 6 10 12 4 4 ...
+ $ life_expectancy_female       : int  66 80 78 NA 64 78 80 78 85 84 ...
+ $ family_planning_1549         : int  42 5 77 NA 30 NA NA 37 NA NA ...
+ $ family_planning_1519         : int  21 5 NA NA 15 NA NA NA NA NA ...
+ $ adolescent_birth_rate        : int  77 17 10 3 163 67 65 24 10 7 ...
+ $ births_age_18                : int  20 3 1 NA 38 NA 12 1 NA NA ...
+ $ antenatal_care_1             : int  59 88 93 NA 82 100 98 100 98 NA ...
+ $ antenatal_care_4_1549        : int  18 78 67 NA 61 100 90 96 92 NA ...
+ $ antenatal_care_4_1519        : int  16 72 NA NA 56 NA 85 93 NA NA ...
+ $ delivery_care_attendant_1549 : int  51 100 97 NA 50 100 100 100 NA 99 ...
+ $ delivery_care_attendant_1519 : int  54 100 NA NA 50 NA NA 100 NA NA ...
+ $ delivery_care_institutional  : int  48 99 97 NA 46 NA 99 99 99 99 ...
+ $ c_section                    : int  3 31 16 NA 4 NA 29 18 31 24 ...
+ $ postnatal_health_newborns    : int  9 86 NA NA 21 NA NA 98 NA NA ...
+ $ postnatal_health_mothers     : int  40 88 NA NA 23 NA NA 97 NA NA ...
+ $ maternal_deaths_2017         : int  7700 5 1200 NA 3000 1 290 11 20 4 ...
+ $ maternal_mortality_ratio_2017: int  638 15 112 NA 241 42 39 26 6 5 ...
+ $ risk_maternal_death_2017     : int  33 3800 270 NA 69 1200 1100 2000 8200 13500 ...
+NULL
+> 
+> # 6. Create a variable called mean_life_exp
+> sowc_demographics$mean_life_exp <- rowMeans(sowc_demographics[, c("life_expectancy_1970", "life_expectancy_2000", "life_expectancy_2018")], na.rm = TRUE)
+> print(head(sowc_demographics["mean_life_exp"]))
+  mean_life_exp
+1      52.33333
+2      73.00000
+3      66.00000
+4           NaN
+5      49.66667
+6           NaN
+> 
+> # 7. Bar chart of top 12 countries with highest mean_life_exp
+> # Select top 12 countries by mean life expectancy
+> top_12 <- head(sowc_demographics[order(-sowc_demographics$mean_life_exp), ], 12)
+> 
+> # Define custom colors for the bars
+> barplot_colors <- c("#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac", "#ffca5d", "#a9cce3")
+> 
+> # Set up plot parameters
+> par(mar = c(5, 8, 4, 2)) # Adjust plot margins
+> 
+> # Create bar plot
+> bp <- barplot(height = top_12$mean_life_exp,
++         names.arg = top_12$countries_and_areas,
++         main = "Top 12 Countries by Mean Life Expectancy",
++         xlab = "Country",
++         ylab = "Mean Life Expectancy",
++         col = barplot_colors,
++         las = 2,
++         cex.names = 0.7, # Increase font size for country names
++         ylim = c(0, max(top_12$mean_life_exp) + 2), # Set y-axis limits
++         space = 0.5, # Adjust space between bars
++         beside = TRUE) # Plot bars side by side
+> 
+> # Add labels to each bar with adjusted positions
+> for (i in 1:length(top_12$mean_life_exp)) {
++   text(x = bp[i], # x-coordinate of label
++        y = top_12$mean_life_exp[i] - 0.75, # y-coordinate of label
++        labels = round(top_12$mean_life_exp[i], 1), # mean life expectancy value rounded to 1 decimal place
++        pos = 3, # position the label above the bar
++        cex = 0.7) # set font size of label
++ }
+> 
+> # 8. Countries present in sowc_maternal_newborn but not in sowc_child_mortality
+> countries_diff <- setdiff(sowc_maternal_newborn$countries_and_areas, sowc_child_mortality$countries_and_areas)
+> cat("Countries present in sowc_maternal_newborn but not in sowc_child_mortality:", "\n", paste(countries_diff, collapse = ", "), "\n")
+Countries present in sowc_maternal_newborn but not in sowc_child_mortality: 
+ Anguilla, British Virgin Islands, Holy See, Liechtenstein, Montserrat, Tokelau, Turks and Caicos Islands 
+> 
+> # 9. Highest personal income for each race
+> highest_income_by_race <- aggregate(total_personal_income ~ race_general, data = census, max, na.rm = TRUE)
+> print(highest_income_by_race)
+                      race_general total_personal_income
+1 American Indian or Alaska Native                 26700
+2                            Black                100000
+3                          Chinese                 34600
+4                         Japanese                 45000
+5                            Other                 40600
+6  Other Asian or Pacific Islander                317000
+7                  Two major races                 69000
+8                            White                456000
+> 
+> # 10. Fill NA values in under18_pop_2018 with 0
+> sowc_demographics$under18_pop_2018[is.na(sowc_demographics$under18_pop_2018)] <- 0
+> 
+> proc.time()
+   user  system elapsed 
+  1.486   0.221   1.744 
